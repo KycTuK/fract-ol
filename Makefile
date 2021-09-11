@@ -12,6 +12,7 @@ SRC_LIST	:=	fractol
 MLX_DIR		:= $(MDIR)/mlx_macos
 MLX_LIB		:= libmlx.dylib
 MLX_HDIR	:= $(MLX_DIR)
+MLX			= $(MLX_DIR)/$(MLX_LIB)
 
 # CC			:=	gcc
 # CFLAGS		:=	-Wall -Wextra -Werror
@@ -35,14 +36,12 @@ GREEN		=	\033[0;32m
 RED			=	\033[0;31m
 RESET		=	\033[0m
 
-
 DEP_FLAGS	=	-MT $@ -MMD -MP -MF $(DDIR)/$*.d
 
 HDR			:=	$(addprefix $(HDIR)/, $(HDR_LIST:=.h))
 SRC			:=	$(addprefix $(SDIR)/, $(SRC_LIST:=.c))
 OBJ			:=	$(patsubst $(SDIR)/%.c, $(ODIR)/%.o, $(SRC))
 DEP			:=	$(patsubst $(SDIR)/%.c, $(DDIR)/%.d, $(SRC))
-
 
 $(ODIR)		:
 				@mkdir -p $(ODIR)
@@ -54,8 +53,12 @@ $(ODIR)/%.o	:	$(SDIR)/%.c $(HDR) | $(ODIR) $(DDIR)
 
 $(NAME)		:	$(OBJ) Makefile $(HDR)
 				$(CC) $(CFLAGS) $(LIBRARIES) $(MLX_FLAGS) -o $(NAME) $(OBJ)
+#$(MLX)
 
 all			:	$(NAME)
+
+# $(MLX)		:
+# 				@$(MAKE) -sC $(MLX_DIR)
 
 clean		:
 				$(RM) $(OBJ)
