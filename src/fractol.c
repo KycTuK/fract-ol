@@ -1,90 +1,53 @@
-#include <fractol.h>
+#include "fractol.h"
 
-void	ft_mlx_pixel_put(t_data *data, t_point *p)
+int	key_hook(int keycode, t_frame *fr)
 {
-	char	*dst;
-
-	dst = data->addr + (\
-			(int)p->y * data->line_length +\
-			(int)p->x * (data->bits_per_pixel / 8)\
-		);
-	*(unsigned int*)dst = p->color;
+	printf("Hello from key_hook! %d\n", keycode);
+	return (0);
 }
 
-void	ft_mlx_draw_pixel(t_frame *fr, t_point *p)
+int mouse_hook(int button, int x, int y, t_frame *fr)
 {
-	ft_mlx_pixel_put(&fr->data, p);
-	mlx_put_image_to_window(fr->mlx_ptr, fr->win_ptr, fr->data.img.ptr, 10, 10);
-}
-
-void	ft_put_circle(t_frame *fr, t_circle circ)
-{
-	double i = 0;
-	int k = 0;
-	t_point p;
-	p.color = circ.info.color;
-	while (k++ < __MAX_K__)
+	int k = __WINDOW_RESIZE_PREC___;
+	printf("Hello from mouse_hook! b[%d] x[%d] y[%d]\n", button, x, y);
+	if (button == 1)
 	{
-		i += M_PI * circ.info.precision;
-		p.x = circ.center.x + sin(i) * circ.radius;
-		p.y = circ.center.y + cos(i) * circ.radius;
-		ft_mlx_draw_pixel(fr, &p);
+		if (x >= (fr->data.img.size.width - k) && (y < k || y >= (fr->data.img.size.height - k)) )
+			printf("Catch resize try! b[%d] x[%d] y[%d]\n", button, x, y);
 	}
+	return (0);
 }
 
-void	ft_rectangle_init(t_rectangle *rect)
+int	ft_close(int keycode, t_frame *fr)
 {
-	rect->min.x = rect->center.x - rect->width / 2;
-	rect->min.y = rect->center.y - rect->height / 2;
-	rect->max.x = rect->center.x + rect->width / 2;
-	rect->max.y = rect->center.y + rect->height / 2;
+	// static keycode_prev;
+	// if (keycode_prev)
+	mlx_destroy_window(fr->mlx_ptr, fr->win_ptr);
+	return (0);
 }
 
-void	ft_put_rectangle(t_frame *fr, t_rectangle rect)
+int	ft_enter_window(int button, int x, int y, t_frame *fr)
 {
-	int k = 0;
-	t_point p;
-	p.color = rect.info.color;
-	ft_rectangle_init(&rect);
- 	p.x = rect.min.x;
-	while (p.x < rect.max.x && k++ < __MAX_K__)
-	{
-		p.y = rect.min.y;
-		ft_mlx_draw_pixel(fr, &p);
-		p.y = rect.max.y;
-		ft_mlx_draw_pixel(fr, &p);
-		p.x += rect.info.precision;
-	}
-	k = 0;
-	p.y = rect.min.y;
-	while (p.y < rect.max.y && k++ < __MAX_K__)
-	{
-		p.x = rect.min.x;
-		ft_mlx_draw_pixel(fr, &p);
-		p.x = rect.max.x;
-		ft_mlx_draw_pixel(fr, &p);
-		p.y += rect.info.precision;
-	}
+	if (!x || x == fr->win.size.width || \
+		!y || y == fr->win.size.height \
+	)
+	printf("Hello newer! b[%d] x[%d] y[%d]\n", button, x, y);
+	return (0);
 }
 
-void	ft_mlx_init(t_frame *fr, int fr_width, int fr_height, char *fr_title)
+int	ft_leave_window(int button, int x, int y, t_frame *fr)
 {
-	fr->data.img.width = fr_width;
-	fr->data.img.height = fr_height;
-	fr->data.img.title = fr_title;
-
-	fr->mlx_ptr = mlx_init();
-	fr->win_ptr = mlx_new_window(fr->mlx_ptr, fr_width, fr_height, fr_title);
-	fr->data.img.ptr = mlx_new_image(fr->mlx_ptr, fr_width, fr_height);
-	fr->data.addr = mlx_get_data_addr(fr->data.img.ptr, \
-										&fr->data.bits_per_pixel, \
-										&fr->data.line_length, \
-										&fr->data.endian);
+	if (!x || x == fr->win.size.width || \
+		!y || y == fr->win.size.height \
+	)
+	printf("Bye newer! b[%d] x[%d] y[%d]\n", button, x, y);
+	return (0);
 }
 
-int main()
+int main(void)
 {
 	t_frame fr;
+	// t_vars	vars;
 	ft_mlx_init(&fr, 1920, 1080, "Hello world!");
 
 	t_circle circ;
@@ -97,13 +60,21 @@ int main()
 	t_rectangle rect;
 	rect.center.x = 500;
 	rect.center.y = 500;
-	rect.width = 300;
-	rect.height = 300;
+	rect.size.width = 300;
+	rect.size.height = 300;
 	rect.info.precision = 0.1;
 	rect.info.color	=	0xFFBF00;
 	
-	ft_put_circle(&fr, circ);
-	ft_put_rectangle(&fr, rect);
+	// ft_put_circle(&fr, circ);
+	// ft_put_rectangle(&fr, rect);
+
+	// vars.mlx = fr.mlx_ptr;
+	// vars.win = fr.win_ptr;
+	mlx_key_hook(fr.win_ptr, key_hook, &fr);
+	mlx_mouse_hook (fr.win_ptr, mouse_hook, &fr);
+	mlx_hook(fr.win_ptr, KeyPress, __KeyPressMask__, ft_close, &fr);
+	mlx_hook(fr.win_ptr, MotionNotify, __EnterWindowMask__, ft_enter_window, &fr);
+	mlx_hook(fr.win_ptr, MotionNotify, __LeaveWindowMask__, ft_leave_window, &fr);
 
 	mlx_loop(fr.mlx_ptr);
 

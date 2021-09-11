@@ -8,6 +8,9 @@ DDIR		:=	$(MDIR)/.dep
 
 HDR_LIST	:=	fractol
 SRC_LIST	:=	fractol
+SRC_LIST	+=	ft_draw \
+				ft_draw_circle \
+				ft_draw_rectangle
 
 MLX_DIR		:= $(MDIR)/mlx_macos
 MLX_LIB		:= libmlx.dylib
@@ -49,19 +52,23 @@ $(DDIR)		:
 				@mkdir -p $(DDIR)
 
 $(ODIR)/%.o	:	$(SDIR)/%.c $(HDR) | $(ODIR) $(DDIR)
-				$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+				@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(NAME)		:	$(OBJ) Makefile $(HDR)
-				$(CC) $(CFLAGS) $(LIBRARIES) $(MLX_FLAGS) -o $(NAME) $(OBJ)
-#$(MLX)
+$(NAME)		:	$(MLX) $(OBJ) Makefile $(HDR)
+				$(CC) $(CFLAGS) $(MLX_FLAGS) -o $(NAME) $(OBJ) $(MLX)
+#$(LIBRARIES)
+#
 
 all			:	$(NAME)
+				@echo "$(NAME): $(GREEN)$(NAME) was created successfully!$(RESET)"
 
-# $(MLX)		:
-# 				@$(MAKE) -sC $(MLX_DIR)
+$(MLX)		:	
+				@$(MAKE) -sC $(MLX_DIR)
+				@echo "$(NAME): $(GREEN)$(MLX) was created successfully!$(RESET)"
 
 clean		:
-				$(RM) $(OBJ)
+				@$(RM) $(OBJ)
+				@echo "$(NAME): $(RED)$(OBJ) was deleted$(RESET)"
 #				@$(MAKE) -sC $(LIBFT_DIRECTORY) clean
 				@$(MAKE) -sC $(MLX_DIR) clean
 				@if [ -d $(ODIR) ]; then rmdir $(ODIR); fi
@@ -70,10 +77,10 @@ clean		:
 fclean		: 	clean
 				@rm -f $(MLX_LIB)
 				@echo "$(NAME): $(RED)$(MLX_LIB) was deleted$(RESET)"
-#				@rm -f $(LIBFT)
-#				@echo "$(NAME): $(RED)$(LIBFT) was deleted$(RESET)"
 				@rm -f $(NAME)
 				@echo "$(NAME): $(RED)$(NAME) was deleted$(RESET)"
+#				@rm -f $(LIBFT)
+#				@echo "$(NAME): $(RED)$(LIBFT) was deleted$(RESET)"
 
 re			:
 				@$(MAKE) fclean
