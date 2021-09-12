@@ -15,7 +15,7 @@ SRC_LIST	+=	ft_draw \
 MLX_DIR		:= $(MDIR)/mlx_macos
 MLX_LIB		:= libmlx.dylib
 MLX_HDIR	:= $(MLX_DIR)
-MLX			= $(MLX_DIR)/$(MLX_LIB)
+MLX			:= $(MLX_DIR)/$(MLX_LIB)
 
 # CC			:=	gcc
 # CFLAGS		:=	-Wall -Wextra -Werror
@@ -24,7 +24,8 @@ DBG_FLAGS	:=	-g
 MLX_FLAGS	:=	-framework OpenGL -framework AppKit
 AR			:=	ar rcs 
 RM			:=	rm -f
-CFLAGS		+=	$(OPT_FLAGS) $(DBG_FLAGS)
+CFLAGS		+=	$(OPT_FLAGS) 
+#CFLAGS		+=	$(DBG_FLAGS) 
 
 LIB			=	mlx
 #m ft
