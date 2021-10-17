@@ -18,9 +18,9 @@ void	ft_put_rectangle(t_frame *fr, t_rectangle rect)
 	while (p.x < rect.max.x && k++ < __MAX_K__)
 	{
 		p.y = rect.min.y;
-		ft_mlx_draw_pixel(fr, &p);
+		ft_mlx_pixel_put(&fr->data, &p);
 		p.y = rect.max.y;
-		ft_mlx_draw_pixel(fr, &p);
+		ft_mlx_pixel_put(&fr->data, &p);
 		p.x += rect.info.precision;
 	}
 	k = 0;
@@ -28,9 +28,10 @@ void	ft_put_rectangle(t_frame *fr, t_rectangle rect)
 	while (p.y < rect.max.y && k++ < __MAX_K__)
 	{
 		p.x = rect.min.x;
-		ft_mlx_draw_pixel(fr, &p);
+		ft_mlx_pixel_put(&fr->data, &p);
 		p.x = rect.max.x;
-		ft_mlx_draw_pixel(fr, &p);
+		ft_mlx_pixel_put(&fr->data, &p);
 		p.y += rect.info.precision;
 	}
+	mlx_put_image_to_window(fr->mlx_ptr, fr->win_ptr, fr->data.img.ptr, 0, 0);
 }

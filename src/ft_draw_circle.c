@@ -11,6 +11,7 @@ void	ft_put_circle(t_frame *fr, t_circle circ)
 		i += M_PI * circ.info.precision;
 		p.x = circ.center.x + sin(i) * circ.radius;
 		p.y = circ.center.y + cos(i) * circ.radius;
-		ft_mlx_draw_pixel(fr, &p);
+		ft_mlx_pixel_put(&fr->data, &p);
 	}
+	mlx_put_image_to_window(fr->mlx_ptr, fr->win_ptr, fr->data.img.ptr, 0, 0);
 }

@@ -1,4 +1,4 @@
-NAME		:=	a.out
+NAME		:=	fractol
 
 MDIR		:=	.
 HDIR		:=	$(MDIR)/inc
@@ -9,15 +9,17 @@ DDIR		:=	$(MDIR)/.dep
 HDR_LIST	:=	fractol
 SRC_LIST	:=	fractol
 SRC_LIST	+=	ft_draw \
+				ft_hooks \
 				ft_draw_circle \
 				ft_draw_rectangle
 
-MLX_DIR		:= $(MDIR)/mlx_macos
-MLX_LIB		:= libmlx.dylib
-MLX_HDIR	:= $(MLX_DIR)
-MLX			:= $(MLX_DIR)/$(MLX_LIB)
+LIB			:=	mlx
+MLX_LIB		:=	libmlx.dylib
+MLX_DIR		:=	$(MDIR)/minilibx
+MLX_HDIR	:=	$(MLX_DIR)
+MLX			:=	$(MLX_DIR)/$(MLX_LIB)
 
-# CC			:=	gcc
+CC			:=	gcc
 # CFLAGS		:=	-Wall -Wextra -Werror
 OPT_FLAGS	:=	-O3
 DBG_FLAGS	:=	-g
@@ -27,10 +29,11 @@ RM			:=	rm -f
 CFLAGS		+=	$(OPT_FLAGS) 
 #CFLAGS		+=	$(DBG_FLAGS) 
 
-LIB			=	mlx
+
 #m ft
-LIBRARIES	=	$(addprefix -l, $(LIB)) \
-				$(addprefix -L, $(MLX_DIR))
+LIBRARIES	=	$(addprefix -L, $(MDIR)) \
+				$(addprefix -l, $(LIB))
+				
 
 INC			=	$(HDIR) $(MLX_HDIR)
 INCLUDES	=	$(addprefix -I, $(INC))
@@ -47,21 +50,25 @@ SRC			:=	$(addprefix $(SDIR)/, $(SRC_LIST:=.c))
 OBJ			:=	$(patsubst $(SDIR)/%.c, $(ODIR)/%.o, $(SRC))
 DEP			:=	$(patsubst $(SDIR)/%.c, $(DDIR)/%.d, $(SRC))
 
-$(ODIR)		:
-				@mkdir -p $(ODIR)
-$(DDIR)		:
-				@mkdir -p $(DDIR)
+# $(ODIR)		:
+# 				@mkdir -p $(ODIR)
+# $(DDIR)		:
+# 				@mkdir -p $(DDIR)
 
 $(ODIR)/%.o	:	$(SDIR)/%.c $(HDR) | $(ODIR) $(DDIR)
 				@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(NAME)		:	$(MLX) $(OBJ) Makefile $(HDR)
-				$(CC) $(CFLAGS) $(MLX_FLAGS) -o $(NAME) $(OBJ) $(MLX)
-#$(LIBRARIES)
-#
-
 all			:	$(NAME)
 				@echo "$(NAME): $(GREEN)$(NAME) was created successfully!$(RESET)"
+
+$(NAME)		:	$(MLX) $(OBJ) Makefile $(HDR)
+				@cp $(MLX) $(MDIR)/$(MLX_LIB)
+				@$(CC) $(CFLAGS) $(LIBRARIES) $(MLX_FLAGS) -o $(NAME) $(OBJ) 
+#				minilibx_opengl/libmlx.a
+#				mlx_macos/libmlx.dylib
+#				$(MLX)
+#				$(MLX_FLAGS) 
+#				$(LIBRARIES)
 
 $(MLX)		:	
 				@$(MAKE) -sC $(MLX_DIR)
@@ -69,11 +76,11 @@ $(MLX)		:
 
 clean		:
 				@$(RM) $(OBJ)
-				@echo "$(NAME): $(RED)$(OBJ) was deleted$(RESET)"
-#				@$(MAKE) -sC $(LIBFT_DIRECTORY) clean
+				@echo "$(NAME): $(RED)$(OBJ) were deleted$(RESET)"
 				@$(MAKE) -sC $(MLX_DIR) clean
-				@if [ -d $(ODIR) ]; then rmdir $(ODIR); fi
-				@if [ -d $(DDIR) ]; then rmdir $(DDIR); fi
+#				@$(MAKE) -sC $(LIBFT_DIRECTORY) clean
+#				@if [ -d $(ODIR) ]; then rmdir $(ODIR); fi
+#				@if [ -d $(DDIR) ]; then rmdir $(DDIR); fi
 
 fclean		: 	clean
 				@rm -f $(MLX_LIB)
