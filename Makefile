@@ -10,6 +10,9 @@ HDR_LIST	:=	fractol
 SRC_LIST	:=	fractol
 SRC_LIST	+=	ft_draw \
 				ft_hooks \
+				ft_inits \
+				ft_calcs \
+				ft_utils \
 				ft_draw_circle \
 				ft_draw_rectangle
 
